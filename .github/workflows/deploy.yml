@@ -52,14 +52,9 @@ jobs:
             echo "Error: index.html not found!"
             exit 1
           fi
+
       
-      # Step 5: Verify Nginx is running
-      - name: Check web server status
-        run: |
-          sudo systemctl status nginx --no-pager
-          echo "Deployment completed successfully!"
-      
-      # Step 6: Test the deployment
+      # Step 5: Test the deployment
       - name: Test deployment
         run: |
           # Wait a moment for files to be available
