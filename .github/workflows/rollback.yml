@@ -1,18 +1,62 @@
 name: Rollback Deployment
+
 on:
   workflow_dispatch:
+
 jobs:
   rollback:
     runs-on: [self-hosted, linux, development, ubuntu-24]
+
     steps:
       - name: Find latest backup
         id: backup
         run: |
-          LATEST_BACKUP=$(ls -t /var/www | grep static-site.backup | head -n 1)
+          # Find the latest backup directory
+          LATEST_BACKUP=$(ls -td /var/www/static-site.backup.* 2>/dev/null | head -n 1)
+          if [ -z "$LATEST_BACKUP" ]; then
+            echo "No backup found — rollback aborted."
+            exit 1
+          fi
+          echo "Found latest backup: $LATEST_BACKUP"
           echo "backup=$LATEST_BACKUP" >> $GITHUB_OUTPUT
-      
-      - name: Restore backup
+
+      - name: Restore from latest backup
         run: |
-          rm -rf /var/www/static-site/*
-          cp -r /var/www/${{ steps.backup.outputs.backup }}/* /var/www/static-site/
-          echo "Restored from backup: ${{ steps.backup.outputs.backup }}"
+          BACKUP_DIR="${{ steps.backup.outputs.backup }}"
+          echo "🧩 Restoring from backup: $BACKUP_DIR"
+
+          # Clear current site and restore backup
+          sudo rm -rf /var/www/static-site/*
+          sudo cp -r $BACKUP_DIR/* /var/www/static-site/
+
+          echo "Rollback completed successfully."
+
+
+
+
+
+
+
+
+
+
+
+
+# name: Rollback Deployment
+# on:
+#   workflow_dispatch:
+# jobs:
+#   rollback:
+#     runs-on: [self-hosted, linux, development, ubuntu-24]
+#     steps:
+#       - name: Find latest backup
+#         id: backup
+#         run: |
+#           LATEST_BACKUP=$(ls -t /var/www | grep static-site.backup | head -n 1)
+#           echo "backup=$LATEST_BACKUP" >> $GITHUB_OUTPUT
+      
+#       - name: Restore backup
+#         run: |
+#           rm -rf /var/www/static-site/*
+#           cp -r /var/www/${{ steps.backup.outputs.backup }}/* /var/www/static-site/
+#           echo "Restored from backup: ${{ steps.backup.outputs.backup }}"
