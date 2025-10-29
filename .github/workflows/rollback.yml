@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 jobs:
   rollback:
-    runs-on: self-hosted
+    runs-on: [self-hosted, linux, development, ubuntu-24]
     steps:
       - name: Find latest backup
         id: backup
