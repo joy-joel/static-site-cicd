@@ -1,3 +1,4 @@
+# This workflow can be triggered manually from the Actions tab whenever you need to roll back to a previous version.
 name: Rollback Deployment
 
 on:
